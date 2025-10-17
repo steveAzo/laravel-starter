@@ -26,7 +26,23 @@ class HandleApiAuthentication
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Only process API requests
+        // List of public routes that don't need authentication
+        $publicRoutes = [
+            'api/signup',
+            'api/login',
+            'api/forgot-password',
+            'api/reset-password',
+            'api/hello',
+        ];
+
+        // Skip authentication check for public routes
+        foreach ($publicRoutes as $route) {
+            if ($request->is($route)) {
+                return $next($request);
+            }
+        }
+
+        // Only process API requests that need authentication
         if (!$request->is('api/*')) {
             return $next($request);
         }
